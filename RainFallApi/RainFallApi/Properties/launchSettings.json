@@ -5,10 +5,11 @@
       "commandName": "Project",
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:3000",
+      "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "rain_fall_api_provider": "https://environment.data.gov.uk",
       },
-      "rain_fall_api_provider": "https://environment.data.gov.uk/",
       "dotnetRunMessages": true
     }
   }
