@@ -15,6 +15,8 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.ConfigurationSwagger();
 
+builder.Services.AddSingleton<IRainFallApiProvider, UKRainFallApiProvider>();
+
 builder.Services.AddControllers()
    .AddJsonOptions(options =>
     {
