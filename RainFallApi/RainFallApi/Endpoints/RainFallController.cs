@@ -58,7 +58,5 @@ public class RainFallController : ControllerBase
 
             return StatusCode(500, "Internal Server Error");
         }
-
-
     }
 }
