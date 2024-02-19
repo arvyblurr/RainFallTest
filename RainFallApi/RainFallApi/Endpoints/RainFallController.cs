@@ -31,7 +31,7 @@ public class RainFallController : ControllerBase
         OperationId = "get-rainfall",
         Tags = ["Rainfall"] 
     )]
-    public IActionResult GetRainFallReading(
+    public async Task<IActionResult> GetRainFallReading(
         [FromRoute, SwaggerParameter(
             Required = true,
             Description = "The id of the reading station"),
@@ -39,9 +39,16 @@ public class RainFallController : ControllerBase
         [FromQuery, SwaggerParameter(
             Required = false,
             Description = "The number of readings to return"), 
-            Range(1, 100)] uint count = 10)
+            Range(1, 100)] int count = 10)
     {
 
-        return NotFound(new Error());
+        var result = await _rainFallApiProvider.Read(stationId, count);
+
+        if(result == null)
+            return NotFound(new Error{
+                Message = "No readings found for the specified stationId"
+            });
+        else
+            return Ok(result);
     }
 }
