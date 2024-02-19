@@ -29,7 +29,7 @@ public class RainFallController : ControllerBase
         Summary = "Get rainfall readings by station Id",
         Description = "Retrieve the latest readings for the specified stationId",
         OperationId = "get-rainfall",
-        Tags = ["Rainfall"] 
+        Tags = ["Rainfall"]
     )]
     public async Task<IActionResult> GetRainFallReading(
         [FromRoute, SwaggerParameter(
@@ -38,17 +38,27 @@ public class RainFallController : ControllerBase
             ] string stationId,
         [FromQuery, SwaggerParameter(
             Required = false,
-            Description = "The number of readings to return"), 
+            Description = "The number of readings to return"),
             Range(1, 100)] int count = 10)
     {
 
-        var result = await _rainFallApiProvider.Read(stationId, count);
+        try
+        {
+            var result = await _rainFallApiProvider.Read(stationId, count);
 
-        if(result == null)
-            return NotFound(new Error{
-                Message = "No readings found for the specified stationId"
-            });
-        else
-            return Ok(result);
+            if (result == null)
+                return NotFound(new Error
+                {
+                    Message = "No readings found for the specified stationId"
+                });
+            else
+                return Ok(result);
+        }
+        catch{
+
+            return StatusCode(500, "Internal Server Error");
+        }
+
+
     }
 }

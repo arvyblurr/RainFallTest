@@ -13,18 +13,32 @@ public class UKRainFallApiProvider : IRainFallApiProvider
     private string providerURL => Environment.GetEnvironmentVariable("rain_fall_api_provider");
     private readonly string apiRoute = "flood-monitoring/id/stations/{0}/readings";
 
+    private readonly Serilog.ILogger _logger;
+
+    public UKRainFallApiProvider(Serilog.ILogger logger)
+    {
+        _logger = logger;
+    }
+
     public async Task<RainfallReadingResponse> Read(string stationId, int limit)
     {
         try
         {
+            _logger.Information("Started Api Integration");
+
             var uri = new Uri(string.Format($"{providerURL}/{apiRoute}", stationId));
             var rawResult = await uri
                 .SetQueryParam("_limit", limit)
                 .SetQueryParam("_sorted")
                 .GetStringAsync();
 
+            _logger.Information("Api request is sucessful");
+
+            _logger.Information("Trying to parse response");
             var rawResponse = JsonConvert.DeserializeObject<JObject>(rawResult);
             var rawResponseObject = rawResponse["items"]?.ToObject<List<RawResponseModel>>();
+
+            _logger.Information("Success reponse parsing");
 
             if (rawResponseObject != null && rawResponseObject.Any())
             {
@@ -41,13 +55,15 @@ public class UKRainFallApiProvider : IRainFallApiProvider
             }
             else
             {
+                _logger.Warning("No Reading was found.");
                 return null;
             }
         }
         catch (FlurlHttpException flurlEx)
         {
-            // Log or handle the exception appropriately
-            throw; // Rethrow the exception to maintain the original stack trace
+            _logger.Error(flurlEx.Message, flurlEx);
+
+            throw;
         }
     }
 }
