@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net.NetworkInformation;
 using Microsoft.AspNetCore.Mvc;
-using RainFallApi.Endpoints.Responses;
+using RainFallApi.Endpoints.Response;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RainFallApi.Endpoints;
@@ -11,13 +11,20 @@ namespace RainFallApi.Endpoints;
 [Route("")]
 public class RainFallController : ControllerBase
 {
+    private IRainFallApiProvider _rainFallApiProvider;
+
+    public RainFallController(IRainFallApiProvider rainFallApiProvider)
+    {
+        _rainFallApiProvider = rainFallApiProvider;
+    }
+
     [HttpGet("rainfall/id/{stationId}/readings")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(rainfallReadingResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(error), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(error), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(error), StatusCodes.Status500InternalServerError)]
-    [ProducesDefaultResponseType(typeof(responses))]
+    [ProducesResponseType(typeof(RainfallReadingResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Error), StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType(typeof(Response.Responses))]
     [SwaggerOperation(
         Summary = "Get rainfall readings by station Id",
         Description = "Retrieve the latest readings for the specified stationId",
@@ -34,7 +41,7 @@ public class RainFallController : ControllerBase
             Description = "The number of readings to return"), 
             Range(1, 100)] uint count = 10)
     {
-        
-        return NotFound(new error());
+
+        return NotFound(new Error());
     }
 }
